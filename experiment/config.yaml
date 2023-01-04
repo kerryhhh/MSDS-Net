@@ -1,0 +1,49 @@
+GPUS: (0,1,2,3)
+OUTPUT_DIR: '/data/hjk/result/Detection/runs/'
+LOG_DIR: 'log'
+WORKERS: 4
+PRINT_FREQ: 10
+
+CUDNN:
+  BENCHMARK: true
+  DETERMINISTIC: false
+  ENABLED: true
+
+MODEL:
+  NAME: ab_model_aot_dct_h_1_m_2x4_cbam
+  DESCRIPTION: 28k*5_trainset
+
+LOSS:
+  LAMBDA_PRED: 1
+
+DATASET:
+  ROOT: '/data/hjk/CelebA-HQ-STGAN-Mask/'
+  # ROOT: '/data/hjk/CelebA-HQ-AttGAN/'
+  # ROOT: '/data/hjk/CelebA-HQ-InterGAN/'
+  DATASET: celebA
+  # TRAIN_LIST: /home/huangjinkun/mycode/Detection/data/CelebA-HQ-STGAN-Mask-train_50k.txt 
+  # VAL_LIST: /home/huangjinkun/mycode/Detection/data/CelebA-HQ-STGAN-Mask-val.txt
+  # TEST_LIST: /home/huangjinkun/mycode/Detection/data/CelebA-HQ-STGAN-Mask-test.txt
+  DATA_LIST: '/data/hjk/CelebA-HQ-STGAN-Mask/image_list.txt'
+  ATTR_PATH: '/data/hjk/CelebA-HQ-STGAN-Mask/list_attr_celeba.txt'
+
+TRAIN:
+  IMAGE_SIZE:
+  - 256
+  - 256
+  BATCH_SIZE: 32
+  SHUFFLE: true
+  BEGIN_EPOCH: 0
+  EPOCHES: 60
+  RESUME: false
+  CONTINUE_PATH: '/data/hjk/result/Detection/runs/ab_model_aot8_dct_h_m_3x4_cbam--2022.11.12--12-14-10'
+  OPTIMIZER: adam
+  LR: 1e-4
+  WEIGHT_DECAY: 0.
+
+TEST:
+  IMAGE_SIZE:
+  - 256
+  - 256
+  BATCH_SIZE: 10
+  NUM_SAMPLES: 2000
