@@ -207,16 +207,14 @@ def main(args):
             train_loss_meter['loss_pred'].update(g_loss_pred.item())
 
         # tensorboard
-        writer.add_scalar('train/loss', train_loss_meter['loss'].avg, epoch)
-        writer.add_scalar('train/loss_mask', train_loss_meter['loss_mask'].avg, epoch)
-        writer.add_scalar('train/loss_pred', train_loss_meter['loss_pred'].avg, epoch)
+        for k, v in train_loss_meter.items():
+            writer.add_scalar(f'train/{k}', v.avg, epoch)
 
-        logger_train.info(f"Train epoch {epoch}: "
-            f"loss: {train_loss_meter['loss'].avg:.6f} |"
-            f"loss_mask: {train_loss_meter['loss_mask'].avg:.6f} |"
-            f"loss_pred: {train_loss_meter['loss_pred'].avg:.6f} |"    
-            f"lr: {optim.param_groups[0]['lr']:.6f} |"  
-        )
+        msg = f"Train epoch {epoch}: "
+        for k, v in train_loss_meter.items():
+            msg += f"{k}: {v.avg:.6f} |"
+        msg += f"lr: {optim.param_groups[0]['lr']} |"
+        logger_train.info(msg)
 
 
         #-------------------------val-----------------------
@@ -296,25 +294,13 @@ def main(args):
             utils.save_images(torch.concat(img_list, dim=0), torch.concat(mask_list, dim=0), torch.concat(pre_list, dim=0), config.TEST.BATCH_SIZE, epoch, os.path.join(model_path, 'images'), 256)
             
             # tensorboard
-            writer.add_scalar('val/loss', val_loss_meter['loss'].avg, epoch)
-            writer.add_scalar('val/loss_mask', val_loss_meter['loss_mask'].avg, epoch)
-            writer.add_scalar('val/loss_pred', val_loss_meter['loss_pred'].avg, epoch)
-            writer.add_scalar('val/p_f1', val_loss_meter['p_f1'].avg, epoch)
-            writer.add_scalar('val/mIoU', val_loss_meter['mIoU'].avg, epoch)
-            writer.add_scalar('val/mcc', val_loss_meter['mcc'].avg, epoch)
-            writer.add_scalar('val/img_f1', val_loss_meter['img_f1'].avg, epoch)
-            writer.add_scalar('val/img_auc', val_loss_meter['img_auc'].avg, epoch)
+            for k, v in val_loss_meter.items():
+                writer.add_scalar(f'val/{k}', v.avg, epoch)
 
-            logger_train.info(f"Val epoch {epoch}: "
-                f"loss: {val_loss_meter['loss'].avg:.6f} |" 
-                f"loss_mask: {val_loss_meter['loss_mask'].avg:.6f} |"  
-                f"loss_pred: {val_loss_meter['loss_pred'].avg:.6f} |"
-                f"p_f1: {val_loss_meter['p_f1'].avg:.6f} |"
-                f"mIoU: {val_loss_meter['mIoU'].avg:.6f} |"   
-                f"mcc: {val_loss_meter['mcc'].avg:.6f} |"   
-                f"img_f1: {val_loss_meter['img_f1'].avg:.6f} |"
-                f"img_auc: {val_loss_meter['img_auc'].avg:.6f} |"
-            )
+            msg = f"Val epoch {epoch}: "
+            for k, v in val_loss_meter.items():
+                msg += f"{k}: {v.avg:.6f} |"
+            logger_train.info(msg)
 
         # save checkpoint
         torch.save({'net': net.module.state_dict(),
